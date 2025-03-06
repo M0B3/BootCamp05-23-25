@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
@@ -15,6 +17,14 @@ public class TourManager : MonoBehaviour
     
     private static TourManager instance = null;
     public static TourManager Instance => instance;
+
+    public Text vie1;
+    public Text vie2;
+
+    public GameObject cam1;
+    public GameObject cam2;
+    
+    
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -27,36 +37,41 @@ public class TourManager : MonoBehaviour
             instance = this;
         }
         DontDestroyOnLoad(this.gameObject);
-		
+        
+        players = new List<Player>();
+        players.Add(new Player());
+        players.Add(new Player());
+        
         // Initialisation du Game Manager...
     }
     
     private void Start()
     { 
-       players = new List<Player>();
-       players.Add(new Player());
-       players.Add(new Player());
+      
 
        realod_shootgun();
     }
     private void Update()
     {
+        vie1.text = players[0].currentHealth.ToString();
+        vie2.text = players[1].currentHealth.ToString();
         
-
         if (!EndGame)
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 Debug.Log("Joueur "+ actualPlayer +" a joué contre Joueur "+ !actualPlayer +" nb balle restant "+ barrel.Count);
                 shoot(true);
-                
+                ChangeCamera();
+
             }
 
             if (Input.GetKeyUp(KeyCode.Mouse1))
             {
                 Debug.Log("Joueur "+ actualPlayer +" a joué contre lui  nb balle restant "+ barrel.Count);
                 shoot(false);
-                
+                ChangeCamera();
+
             }
             
         }
@@ -116,13 +131,6 @@ public class TourManager : MonoBehaviour
         
     }
     
-    
-    public void realod_canon_shootgun()
-    {
-        
-    }
-
-    
     public void TurnEnd()
     {
         actualPlayer = !actualPlayer;
@@ -180,4 +188,19 @@ public class TourManager : MonoBehaviour
         Debug.Log("nombre de balle restant "+ barrel.Count);
 
     }
+
+    private void ChangeCamera()
+    {
+        if (!actualPlayer)
+        {
+            cam1.SetActive(true);
+            cam2.SetActive(false);
+        }
+        else
+        {
+            cam1.SetActive(false);
+            cam2.SetActive(true);
+        }
+    }
+    
 }
